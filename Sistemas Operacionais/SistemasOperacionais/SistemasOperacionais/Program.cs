@@ -35,10 +35,46 @@ namespace SistemasOperacionais
         }
         static string Search(Data d)
         {
+            StreamReader file = new StreamReader(path, true);
+
+            if (file.EndOfStream)
+            {
+                return null;
+            }
+
+            string text = file.ReadLine();
+
+            while (text != null)
+            {
+                string[] splitData = text.Split(':');
+
+                if (splitData[0] == d.key)
+                {
+                    return splitData[1];
+                }
+
+                text = file.ReadLine();
+            }
+
+            file.Close();
+
+            return null;
         }
         static bool Insert(Data d)
         {
+            if (Search(d) != null)
+            {
+                return false;
+            }
 
+            StreamWriter file = new StreamWriter(path, true);
+
+            file.BaseStream.Seek(0, SeekOrigin.End);
+            file.WriteLine(d.key + ":" + d.value);
+
+            file.Close();
+
+            return true;
         }
         static bool Update(Data d)
         {
