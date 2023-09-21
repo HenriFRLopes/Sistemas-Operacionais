@@ -9,43 +9,53 @@ namespace SistemasOperacionais
         {
             string key = Console.ReadLine();
             string value = Console.ReadLine();
+            Data d = new Data(key, value);
             string action = Console.ReadLine();
 
             switch (action)
             {
                 case "Search":
-                    string found = Search(key);
+                    string found = Search(d);
                     if (found != null) Console.WriteLine(found);
                     else Console.WriteLine("Key does not exist");
                     break;
                 case "Insert":
-                    if (Insert(key, value)) Console.WriteLine("Successful insertion");
+                    if (Insert(d)) Console.WriteLine("Successful insertion");
                     else Console.WriteLine("Key already Inserted");
                     break;
                 case "Update":
-                    if (Update(key, value)) Console.WriteLine("Successfully Updated");
+                    if (Update(d)) Console.WriteLine("Successfully Updated");
                     else Console.WriteLine("Key does not exist");
                     break;
                 case "Remove":
-                    if (Remove(key)) Console.WriteLine("Successfully removed");
+                    if (Remove(d) Console.WriteLine("Successfully removed");
                     else Console.WriteLine("Key does not exist");
                     break;
             }
         }
-        static string Search(string key)
+        static string Search(Data d)
+        {
+        }
+        static bool Insert(Data d)
         {
 
         }
-        static bool Insert(string key, string v)
-        {
-
-        }
-        static bool Update(string key, string v)
+        static bool Update(Data d)
         {
         }
-        static bool Remove(string key)
+        static bool Remove(Data d)
         {
 
         }
     }
+    class Data
+    {
+        public string key, value;
+        public Data(string k, string v)
+        {
+            this.key = k;
+            this.value = v;
+        }
+    }
+
 }
