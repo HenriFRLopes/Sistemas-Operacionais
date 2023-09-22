@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 namespace SistemasOperacionais
 {
@@ -7,10 +8,11 @@ namespace SistemasOperacionais
         string path = "bancoDeDados.db";
         static void Main(string[] args)
         {
-            string key = Console.ReadLine();
-            string value = Console.ReadLine();
-            Data d = new Data(key, value);
-            string action = Console.ReadLine();
+            if (args.Length == 0) return;
+            string[] split = args[0].Split('=');
+            string[] keyAndValue = split[1].Split(':');
+            Data d = new Data(keyAndValue[0], keyAndValue[1]);
+            string action = split[0];
 
             switch (action)
             {
