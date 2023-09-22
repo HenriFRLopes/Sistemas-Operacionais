@@ -6,6 +6,7 @@ namespace SistemasOperacionais
     class Program
     {
         string path = "bancoDeDados.db";
+        string temporaryFile = "Temporary_";
         static void Main(string[] args)
         {
             if (args.Length == 0) return;
@@ -80,10 +81,69 @@ namespace SistemasOperacionais
         }
         static bool Update(Data d)
         {
+            string path2 = temporaryFile + path;
+            bool updated = false;
+            StreamWriter tempFile = new StreamWriter(path2, true);
+            StreamReader file = new StreamReader(path, true);
+            if (file == null || file.EndOfStream || tempFile == null)
+            {
+                return false;
+            }
+            string text = file.ReadLine();
+            while (text != null)
+            {
+                string[] split = text.Split(':');
+                if (!updated && split[0] == d.key)
+                {
+                    tempFile.WriteLine(d.key + ":" + d.value);
+                    updated = true;
+                }
+                else tempFile.WriteLine(text);
+                text = file.ReadLine();
+            }
+            file.Close();
+            tempFile.Close();
+            if (updated)
+            {
+                File.Delete(path);
+                File.Move(path2, path);
+            }
+            else
+            {
+                File.Delete(path2);
+            }
+            return updated;
         }
         static bool Remove(Data d)
         {
-
+            string path2 = temporaryFile + path;
+            bool removed = false;
+            StreamWriter tempFile = new StreamWriter(path2, true);
+            StreamReader file = new StreamReader(file);
+            if (file == null || file.EndOfStream || tempFile == null)
+            {
+                return false;
+            }
+            string text = file.ReadLine();
+            while (text != null)
+            {
+                string[] split = text.Split(':');
+                if (split[0] == d.key) removed = true;
+                else tempFile.WriteLine(text);
+                text = file.ReadLine();
+            }
+            file.Close();
+            tempFile.Close();
+            if (removed)
+            {
+                File.Delete(path);
+                File.Move(temporaryFile, file);
+            }
+            else
+            {
+                File.Delete(temporaryFile);
+            }
+            return removed;
         }
     }
     class Data
