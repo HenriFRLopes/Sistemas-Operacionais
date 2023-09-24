@@ -1,0 +1,13 @@
+C:\Users\Windows\Documents\git kraken\Sistemas-Operacionais\Sistemas Operacionais\SistemasOperacionais\SistemasOperacionais\obj\Debug\netcoreapp3.1\SistemasOperacionais.csprojAssemblyReference.cache
+C:\Users\Windows\Documents\git kraken\Sistemas-Operacionais\Sistemas Operacionais\SistemasOperacionais\SistemasOperacionais\obj\Debug\netcoreapp3.1\SistemasOperacionais.AssemblyInfoInputs.cache
+C:\Users\Windows\Documents\git kraken\Sistemas-Operacionais\Sistemas Operacionais\SistemasOperacionais\SistemasOperacionais\obj\Debug\netcoreapp3.1\SistemasOperacionais.AssemblyInfo.cs
+C:\Users\Windows\Documents\git kraken\Sistemas-Operacionais\Sistemas Operacionais\SistemasOperacionais\SistemasOperacionais\obj\Debug\netcoreapp3.1\SistemasOperacionais.csproj.CoreCompileInputs.cache
+C:\Users\Windows\Documents\git kraken\Sistemas-Operacionais\Sistemas Operacionais\SistemasOperacionais\SistemasOperacionais\bin\Debug\netcoreapp3.1\SistemasOperacionais.exe
+C:\Users\Windows\Documents\git kraken\Sistemas-Operacionais\Sistemas Operacionais\SistemasOperacionais\SistemasOperacionais\bin\Debug\netcoreapp3.1\SistemasOperacionais.deps.json
+C:\Users\Windows\Documents\git kraken\Sistemas-Operacionais\Sistemas Operacionais\SistemasOperacionais\SistemasOperacionais\bin\Debug\netcoreapp3.1\SistemasOperacionais.runtimeconfig.json
+C:\Users\Windows\Documents\git kraken\Sistemas-Operacionais\Sistemas Operacionais\SistemasOperacionais\SistemasOperacionais\bin\Debug\netcoreapp3.1\SistemasOperacionais.runtimeconfig.dev.json
+C:\Users\Windows\Documents\git kraken\Sistemas-Operacionais\Sistemas Operacionais\SistemasOperacionais\SistemasOperacionais\bin\Debug\netcoreapp3.1\SistemasOperacionais.dll
+C:\Users\Windows\Documents\git kraken\Sistemas-Operacionais\Sistemas Operacionais\SistemasOperacionais\SistemasOperacionais\bin\Debug\netcoreapp3.1\SistemasOperacionais.pdb
+C:\Users\Windows\Documents\git kraken\Sistemas-Operacionais\Sistemas Operacionais\SistemasOperacionais\SistemasOperacionais\obj\Debug\netcoreapp3.1\SistemasOperacionais.dll
+C:\Users\Windows\Documents\git kraken\Sistemas-Operacionais\Sistemas Operacionais\SistemasOperacionais\SistemasOperacionais\obj\Debug\netcoreapp3.1\SistemasOperacionais.pdb
+C:\Users\Windows\Documents\git kraken\Sistemas-Operacionais\Sistemas Operacionais\SistemasOperacionais\SistemasOperacionais\obj\Debug\netcoreapp3.1\SistemasOperacionais.genruntimeconfig.cache

@@ -8,19 +8,19 @@
     ".NETCoreApp,Version=v3.1": []
   },
   "packageFolders": {
-    "C:\\Users\\henri\\.nuget\\packages\\": {}
+    "C:\\Users\\Windows\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\henri\\OneDrive\\Área de Trabalho\\Sistemas Operacionais\\SistemasOperacionais\\SistemasOperacionais\\SistemasOperacionais.csproj",
+      "projectUniqueName": "C:\\Users\\Windows\\Documents\\git kraken\\Sistemas-Operacionais\\Sistemas Operacionais\\SistemasOperacionais\\SistemasOperacionais\\SistemasOperacionais.csproj",
       "projectName": "SistemasOperacionais",
-      "projectPath": "C:\\Users\\henri\\OneDrive\\Área de Trabalho\\Sistemas Operacionais\\SistemasOperacionais\\SistemasOperacionais\\SistemasOperacionais.csproj",
-      "packagesPath": "C:\\Users\\henri\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\henri\\OneDrive\\Área de Trabalho\\Sistemas Operacionais\\SistemasOperacionais\\SistemasOperacionais\\obj\\",
+      "projectPath": "C:\\Users\\Windows\\Documents\\git kraken\\Sistemas-Operacionais\\Sistemas Operacionais\\SistemasOperacionais\\SistemasOperacionais\\SistemasOperacionais.csproj",
+      "packagesPath": "C:\\Users\\Windows\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\Windows\\Documents\\git kraken\\Sistemas-Operacionais\\Sistemas Operacionais\\SistemasOperacionais\\SistemasOperacionais\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\henri\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\Windows\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -32,7 +32,6 @@
       },
       "frameworks": {
         "netcoreapp3.1": {
-          "targetAlias": "netcoreapp3.1",
           "projectReferences": {}
         }
       },
@@ -44,7 +43,6 @@
     },
     "frameworks": {
       "netcoreapp3.1": {
-        "targetAlias": "netcoreapp3.1",
         "imports": [
           "net461",
           "net462",
@@ -60,7 +58,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.414\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.403\\RuntimeIdentifierGraph.json"
       }
     }
   }
