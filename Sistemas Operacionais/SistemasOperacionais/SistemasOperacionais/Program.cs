@@ -45,6 +45,7 @@ namespace SistemasOperacionais
         //insere o valor "key" e o valor "value" do dado inserido no arquivo, separando os dois valores com dois pontos para poder usar a função Split() quando pesquizar ou atualizar
         static string Search(Data d)
         {
+            if (!File.Exists(path)) return null;
             StreamReader file = new StreamReader(path);
 
             if (file.EndOfStream)
