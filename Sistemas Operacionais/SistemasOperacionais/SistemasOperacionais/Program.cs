@@ -10,39 +10,133 @@ namespace SistemasOperacionais
         const string temporaryFile = "Temporary_";
         static void Main(string[] args)
         {
-            //pega as linhas de comando e divide em variaveis sepados
+            //pega as linhas de argumento do usuario
             if (args.Length == 0) return;
+         
             string[] split = args[0].Split('=');
-            string[] keyAndValue = split[1].Split(':');
-            //cria uma variavel do tipo Data
-            Data d = new Data(keyAndValue[0], keyAndValue[1]);
+            if(split.Length < 2)
+            {
+                Console.WriteLine("Invalid Input: Missing '='");
+                return;
+
+            }
+
+            //O usuario pode usar os comandos: Search, Insert, Update e Remove
             string action = split[0];
 
-            switch (action)
+            //Separa o argumento na variavel keyAndValue 
+            string[] keyAndValue = split[1].Split(':', 2); // [0] = Chave do Dado (sempre uma int) [1] = Valor do Dado
+
+            if(keyAndValue[0] == "")
             {
-                default:
-                    Console.WriteLine("Invalid Action");
-                    break;
-                case "Search":
-                    string found = Search(d);
-                    if (found != null) Console.WriteLine(found);
-                    else Console.WriteLine("Key does not exist");
-                    break;
-                case "Insert":
-                    if (Insert(d)) Console.WriteLine("Successful insertion");
-                    else Console.WriteLine("Key already Inserted");
-                    break;
-                case "Update":
-                    if (Update(d)) Console.WriteLine("Successfully Updated");
-                    else Console.WriteLine("Key does not exist");
-                    break;
-                case "Remove":
-                    if (Remove(d)) Console.WriteLine("Successfully removed");
-                    else Console.WriteLine("Key does not exist");
-                    break;
+                Console.WriteLine("Invalid Input: Missing Key")
+            }
+            
+            int key;
+
+            //Verifica se a chave é um numero inteiro
+            if(!int.TryParse(keyAndValue[0], out key))
+            {
+                Console.WriteLine("Invalid Input: Key must be an integer number");
+                return;
+            }
+
+            //Verifica se a cahve é um numero positivo
+            if(keyAndValue[0] < 0)
+            {
+                Console.WriteLine("Invalid Input: Key must be a positive number");
+                return;
+            }
+
+
+            //cria uma variavel do tipo Data
+            Data d = new Data(keyAndValue[0], keyAndValue[1]);
+
+            try
+            {
+
+                switch (action)
+                {
+                    default:
+                        Console.WriteLine("Invalid Comand");
+                        break;
+
+                    case "Search":
+
+                        if (keyAndValue.Length == 1)
+                        {
+                            string found = Search(d);
+
+                            if (found != null) Console.WriteLine(found);
+
+                            else Console.WriteLine("Key does not exist");
+                        }
+
+                        else
+                        {
+                            Console.WriteLine("Invalid Input: More values than needed");
+                            return;
+                        }
+
+                        break;
+
+                    case "Insert":
+
+                        if(keyAndValue.Length <2)
+                        {
+                            Console.WriteLine("Invalid Input: Data value is Missing");
+                            return;
+                        }
+
+                        else
+                        {
+                            if(Insert(d)) Console.WriteLine(keyAndValue[0]);
+
+                            else Console.WriteLine("Key is already inserted");
+                        }
+
+                        break;
+
+                    case "Update":
+
+                        if (keyAndValue.Length < 2)
+                        {
+                            Console.WriteLine("Invalid Input: Data value is Missing");
+                            return;
+                        }
+                        else
+                        {
+                            if (Update(d)) Console.WriteLine("Successfully Updated");
+
+                            else Console.WriteLine("Key does not exist");
+
+                        }
+
+                        break;
+
+                    case "Remove":
+
+                        if (keyAndValue.Length == 1)
+                        {
+                            if (Remove(d)) Console.WriteLine("Successfully removed");
+
+                            else Console.WriteLine("Key does not exist");
+                        }
+
+                        else
+                        {
+                            Console.WriteLine("Invalid Input: More values than needed");
+                            return;
+                        }
+
+                        break;
+                }
+            }
+            catch (Exception exeception)
+            {
+                Console.WriteLine(exeception.Message);
             }
         }
-        //insere o valor "key" e o valor "value" do dado inserido no arquivo, separando os dois valores com dois pontos para poder usar a função Split() quando pesquizar ou atualizar
         static string Search(Data d)
         {
             if (!File.Exists(path)) return null;
@@ -71,6 +165,7 @@ namespace SistemasOperacionais
 
             return null;
         }
+        // Utiliza o StreamWriter para receber ou criar um arquivo novo, independente do caso, este metodo abre o arquivo, lê e insere as informãções (caso este dado não exista ainda) e fecha o arquivo
         static bool Insert(Data d)
         {
             if (Search(d) != null)
@@ -84,6 +179,8 @@ namespace SistemasOperacionais
             file.WriteLine(d.key + ":" + d.value);
 
             file.Close();
+
+            Console.WriteLine("Successful insertion");
 
             return true;
         }
