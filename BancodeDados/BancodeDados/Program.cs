@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using MSMQ.Messaging;
 
 namespace SistemasOperacionais
 {
@@ -8,8 +9,12 @@ namespace SistemasOperacionais
         //variaveis do arquivo de banco de dados
         const string path = "bancoDeDados.db";
         const string temporaryFile = "Temporary_";
+        //Variaveis da fila de processos
+        const string pathFila = ".//Private$//BancoDeDadosFila";
+        const string clienteFila = ".//Private$//BancoDeDadosFilaCliente";
         static void Main(string[] args)
         {
+
             //pega as linhas de argumento do usuario
             if (args.Length == 0) return;
          
