@@ -142,6 +142,28 @@ namespace SistemasOperacionais
                 Console.WriteLine(exeception.Message);
             }
         }
+
+        static void CreateQueue()
+        {
+            if (!MessageQueue.Exists(pathFila))
+            {
+                MessageQueue.Create(pathFila);
+            }
+        }
+
+        static void DeleteQueue()
+        {
+            if (MessageQueue.Exists(pathFila))
+            {
+                MessageQueue.Delete(pathFila);
+                Console.WriteLine("Queue deleted");
+            }
+            else
+            {
+                Console.WriteLine("Queue inexistent");
+            }
+        }
+
         static string Search(Data d)
         {
             if (!File.Exists(path)) return null;
