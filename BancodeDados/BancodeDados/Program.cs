@@ -5,6 +5,7 @@ using MSMQ.Messaging;
 
 namespace SistemasOperacionais
 {
+    public enum Acao { Search, Update, Insert, Remove };
     class Program
     {
         //variaveis do arquivo de banco de dados
@@ -15,22 +16,54 @@ namespace SistemasOperacionais
         const string pathFila = ".//Private$//BancoDeDadosFila";
         const string clienteFila = ".//Private$//BancoDeDadosFilaCliente";
 
-        static Mutex mutex;
-        static Semaphore semaforo;
-        static int leitores;
-
         static void Main(string[] args)
         {
+            Controller controller = new Controller(path);
 
             //pega as linhas de argumento do usuario
-            if (args.Length == 0) return;
-
+            if (args.Length > 0)
+            {
+                AcharAcao(args, controller);
+                return;
+            }
 
             CreateQueue();
 
             MessageQueue mq = new MessageQueue(path);
             mq.Formatter = new XmlMessageFormatter(new Type[] { typeof(string) });
 
+            while (true)
+            {
+                try
+                {
+                    Message message = mq.Receive();
+                    Requisicao r = (Requisicao)message.Body;
+
+                    //Thread de Resposta do Cliente
+                    Thread thread = new Thread(() => Resposta(controller, r));
+                    thread.Start();
+                }
+                catch (MessageQueueException e)
+                {
+                    Console.WriteLine("Invalid Action: " + e.Message);
+                }
+            }
+
+        }
+        static void Resposta(Controller c, Requisicao r)
+        {
+            //Processa a resposta
+            string answer = c.Action(r);
+
+            //Envia a resposta
+            MessageQueue clienteFila = new MessageQueue(r.path);
+            clienteFila.Formatter = new XmlMessageFormatter(new Type[] { typeof(string) });
+            clienteFila.Send(new Message(answer));
+            clienteFila.Close();
+        }
+
+        static void AcharAcao(string[] args, Controller c)
+        {
 
             string[] split = args[0].Split('=');
             if (split.Length < 2)
@@ -67,93 +100,72 @@ namespace SistemasOperacionais
                 return;
             }
 
+            Requisicao r = new Requisicao();
+            r.key = key;
 
-            //cria uma variavel do tipo Data
-            Data d = new Data(keyAndValue[0], keyAndValue[1]);
+            switch (action)
+            {
+                default:
+                    Console.WriteLine("Invalid Comand");
+                    break;
+
+                case "Search":
+
+                    if (keyAndValue.Length == 1) r.acao = Acao.Search;
+                    else return;
+                    break;
+
+                case "Insert":
+
+                    if (keyAndValue.Length < 2)
+                    {
+                        Console.WriteLine("Invalid Input: Data value is Missing");
+                        return;
+                    }
+                    else
+                    {
+                        r.value = keyAndValue[1];
+                        r.acao = Acao.Insert;
+                    }
+                    break;
+
+                case "Update":
+
+                    if (keyAndValue.Length < 2)
+                    {
+                        Console.WriteLine("Invalid Input: Data value is Missing");
+                        return;
+                    }
+                    else
+                    {
+                        r.value = keyAndValue[1];
+                        r.acao = Acao.Update;
+                    }
+
+                    break;
+
+                case "Remove":
+
+                    if (keyAndValue.Length == 1)
+                    {
+                        r.acao = Acao.Remove;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Invalid Input: More values than needed");
+                        return;
+                    }
+                    break;
+            }
 
             try
             {
-
-                switch (action)
-                {
-                    default:
-                        Console.WriteLine("Invalid Comand");
-                        break;
-
-                    case "Search":
-
-                        if (keyAndValue.Length == 1)
-                        {
-                            string found = Search(d);
-
-                            if (found != null) Console.WriteLine(found);
-
-                            else Console.WriteLine("Key does not exist");
-                        }
-
-                        else
-                        {
-                            Console.WriteLine("Invalid Input: More values than needed");
-                            return;
-                        }
-
-                        break;
-
-                    case "Insert":
-
-                        if (keyAndValue.Length < 2)
-                        {
-                            Console.WriteLine("Invalid Input: Data value is Missing");
-                            return;
-                        }
-
-                        else
-                        {
-                            if (Insert(d)) Console.WriteLine(keyAndValue[0]);
-
-                            else Console.WriteLine("Key is already inserted");
-                        }
-
-                        break;
-
-                    case "Update":
-
-                        if (keyAndValue.Length < 2)
-                        {
-                            Console.WriteLine("Invalid Input: Data value is Missing");
-                            return;
-                        }
-                        else
-                        {
-                            if (Update(d)) Console.WriteLine("Successfully Updated");
-
-                            else Console.WriteLine("Key does not exist");
-
-                        }
-
-                        break;
-
-                    case "Remove":
-
-                        if (keyAndValue.Length == 1)
-                        {
-                            if (Remove(d)) Console.WriteLine("Successfully removed");
-
-                            else Console.WriteLine("Key does not exist");
-                        }
-
-                        else
-                        {
-                            Console.WriteLine("Invalid Input: More values than needed");
-                            return;
-                        }
-
-                        break;
-                }
+                string answer = c.Action(r);
+                Console.WriteLine(answer);
             }
-            catch (Exception exeception)
+            catch (Exception e)
             {
-                Console.WriteLine(exeception.Message);
+                Console.WriteLine("Inavlid Action: " + e.Message);
             }
         }
 
@@ -178,7 +190,57 @@ namespace SistemasOperacionais
             }
         }
 
-        public static string Search(Data d)
+    }
+    public class Controller
+    {
+        string path;
+        string temporaryFile;
+
+        Mutex mutex;
+        Semaphore semaforo;
+        int leitores = 0;
+
+        public Controller(string path, string temporaryFile = "Temporary_")
+        {
+            this.path = path;
+            this.temporaryFile = temporaryFile;
+            mutex = new Mutex();
+            semaforo = new Semaphore(1, 1);
+            leitores = 0;
+        }
+
+        public string Action(Requisicao r)
+        {
+            switch (r.a)
+            {
+                default:
+                    return "Invalid Comand";
+
+                case acao.Search:
+
+                    string found = Search(r.key);
+                    if (found != null) return found;
+                    else return "Key does not exist";
+
+                case acao.Insert:
+
+                    if (Insert(r.key, r.value)) return r.value.ToString();
+                    else return "Key is already inserted";
+
+                case acao.Update:
+
+                    if (Update(r.key, r.value)) return "Successfully Updated";
+                    else return "Key does not exist";
+
+                case acao.Remove:
+
+                    if (Remove(r.key)) return "Successfully removed";
+
+                    else return "Key does not exist";
+            }
+        }
+
+        public string Search(int key)
         {
             string found = null;
             bool encontrado = false;
@@ -211,7 +273,7 @@ namespace SistemasOperacionais
             {
                 string[] splitData = text.Split(':');
 
-                if (splitData[0] == d.key)
+                if (splitData[0] == key.ToString())
                 {
                     found = splitData[1];
                     encontrado = true;
@@ -242,9 +304,9 @@ namespace SistemasOperacionais
         }
 
         // Utiliza o StreamWriter para receber ou criar um arquivo novo, independente do caso, este metodo abre o arquivo, lê e insere as informãções (caso este dado não exista ainda) e fecha o arquivo
-        static bool Insert(Data d)
+        public bool Insert(int key, string value)
         {
-            if (Search(d) != null)
+            if (Search(key) != null)
             {
                 return false;
             }
@@ -255,7 +317,7 @@ namespace SistemasOperacionais
             StreamWriter file = new StreamWriter(path, true);
 
             file.BaseStream.Seek(0, SeekOrigin.End);
-            file.WriteLine(d.key + ":" + d.value);
+            file.WriteLine(key + ":" + value);
             file.Close();
 
             //Semaforo Up
@@ -267,7 +329,7 @@ namespace SistemasOperacionais
         }
 
         //utiliza um arquivo temporario para armazenar as informações antigas do dado e substitui as informações que precisam ser atualizadas
-        static bool Update(Data d)
+        public bool Update(int key, string value)
         {
             string path2 = temporaryFile + path;
             bool updated = false;
@@ -291,9 +353,9 @@ namespace SistemasOperacionais
             {
                 string[] split = text.Split(':');
 
-                if (!updated && split[0] == d.key)
+                if (!updated && split[0] == key.ToString())
                 {
-                    tempFile.WriteLine(d.key + ":" + d.value);
+                    tempFile.WriteLine(key + ":" + value);
                     updated = true;
                 }
 
@@ -325,7 +387,7 @@ namespace SistemasOperacionais
         }
 
         //utiliza um arquivo temporario que tem as informações antigas e compara o "key" do dado inserido com as informações do arquivo original para deletar
-        static bool Remove(Data d)
+        public bool Remove(int key)
         {
             if (!File.Exists(path)) return false;
 
@@ -351,7 +413,7 @@ namespace SistemasOperacionais
             {
                 string[] split = text.Split(':');
 
-                if (split[0] == d.key) removed = true;
+                if (split[0] == key.ToString()) removed = true;
 
                 else tempFile.WriteLine(text);
 
@@ -379,14 +441,13 @@ namespace SistemasOperacionais
 
             return removed;
         }
+
     }
-    class Data
+    public class Requisicao
     {
-        public string key, value;
-        public Data(string k, string v)
-        {
-            this.key = k;
-            this.value = v;
-        }
+        public int key;
+        public string value;
+        public string path;
+        public Acao acao;
     }
 }
