@@ -25,3 +25,29 @@ C:\Users\henri\OneDrive\Área de Trabalho\Sistemas-Operacionais\Sistemas Operaci
 C:\Users\henri\OneDrive\Área de Trabalho\Sistemas-Operacionais\Sistemas Operacionais\SistemasOperacionais\SistemasOperacionais\obj\Debug\netcoreapp3.1\SistemasOperacionais.dll
 C:\Users\henri\OneDrive\Área de Trabalho\Sistemas-Operacionais\Sistemas Operacionais\SistemasOperacionais\SistemasOperacionais\obj\Debug\netcoreapp3.1\SistemasOperacionais.pdb
 C:\Users\henri\OneDrive\Área de Trabalho\Sistemas-Operacionais\Sistemas Operacionais\SistemasOperacionais\SistemasOperacionais\obj\Debug\netcoreapp3.1\SistemasOperacionais.genruntimeconfig.cache
+C:\Users\henri\OneDrive\Área de Trabalho\Sistemas-Operacionais\BancodeDados\BancodeDados\obj\Debug\netcoreapp3.1\SistemasOperacionais.csproj.AssemblyReference.cache
+C:\Users\henri\OneDrive\Área de Trabalho\Sistemas-Operacionais\BancodeDados\BancodeDados\obj\Debug\netcoreapp3.1\SistemasOperacionais.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\henri\OneDrive\Área de Trabalho\Sistemas-Operacionais\BancodeDados\BancodeDados\obj\Debug\netcoreapp3.1\SistemasOperacionais.AssemblyInfoInputs.cache
+C:\Users\henri\OneDrive\Área de Trabalho\Sistemas-Operacionais\BancodeDados\BancodeDados\obj\Debug\netcoreapp3.1\SistemasOperacionais.AssemblyInfo.cs
+C:\Users\henri\OneDrive\Área de Trabalho\Sistemas-Operacionais\BancodeDados\BancodeDados\obj\Debug\netcoreapp3.1\SistemasOperacionais.csproj.CoreCompileInputs.cache
+C:\Users\henri\OneDrive\Área de Trabalho\Sistemas-Operacionais\BancodeDados\BancodeDados\obj\Debug\netcoreapp3.1\SistemasOperacionais.dll
+C:\Users\henri\OneDrive\Área de Trabalho\Sistemas-Operacionais\BancodeDados\BancodeDados\obj\Debug\netcoreapp3.1\SistemasOperacionais.pdb
+C:\Users\henri\OneDrive\Área de Trabalho\Sistemas-Operacionais\BancodeDados\BancodeDados\bin\Debug\netcoreapp3.1\SistemasOperacionais.exe
+C:\Users\henri\OneDrive\Área de Trabalho\Sistemas-Operacionais\BancodeDados\BancodeDados\bin\Debug\netcoreapp3.1\SistemasOperacionais.deps.json
+C:\Users\henri\OneDrive\Área de Trabalho\Sistemas-Operacionais\BancodeDados\BancodeDados\bin\Debug\netcoreapp3.1\SistemasOperacionais.runtimeconfig.json
+C:\Users\henri\OneDrive\Área de Trabalho\Sistemas-Operacionais\BancodeDados\BancodeDados\bin\Debug\netcoreapp3.1\SistemasOperacionais.runtimeconfig.dev.json
+C:\Users\henri\OneDrive\Área de Trabalho\Sistemas-Operacionais\BancodeDados\BancodeDados\bin\Debug\netcoreapp3.1\SistemasOperacionais.dll
+C:\Users\henri\OneDrive\Área de Trabalho\Sistemas-Operacionais\BancodeDados\BancodeDados\bin\Debug\netcoreapp3.1\SistemasOperacionais.pdb
+C:\Users\henri\OneDrive\Área de Trabalho\Sistemas-Operacionais\BancodeDados\BancodeDados\bin\Debug\netcoreapp3.1\Microsoft.Win32.SystemEvents.dll
+C:\Users\henri\OneDrive\Área de Trabalho\Sistemas-Operacionais\BancodeDados\BancodeDados\bin\Debug\netcoreapp3.1\MSMQ.Messaging.dll
+C:\Users\henri\OneDrive\Área de Trabalho\Sistemas-Operacionais\BancodeDados\BancodeDados\bin\Debug\netcoreapp3.1\System.DirectoryServices.dll
+C:\Users\henri\OneDrive\Área de Trabalho\Sistemas-Operacionais\BancodeDados\BancodeDados\bin\Debug\netcoreapp3.1\System.Drawing.Common.dll
+C:\Users\henri\OneDrive\Área de Trabalho\Sistemas-Operacionais\BancodeDados\BancodeDados\bin\Debug\netcoreapp3.1\System.Security.Permissions.dll
+C:\Users\henri\OneDrive\Área de Trabalho\Sistemas-Operacionais\BancodeDados\BancodeDados\bin\Debug\netcoreapp3.1\System.Windows.Extensions.dll
+C:\Users\henri\OneDrive\Área de Trabalho\Sistemas-Operacionais\BancodeDados\BancodeDados\bin\Debug\netcoreapp3.1\runtimes\win\lib\netcoreapp3.0\Microsoft.Win32.SystemEvents.dll
+C:\Users\henri\OneDrive\Área de Trabalho\Sistemas-Operacionais\BancodeDados\BancodeDados\bin\Debug\netcoreapp3.1\runtimes\win\lib\netcoreapp2.0\System.DirectoryServices.dll
+C:\Users\henri\OneDrive\Área de Trabalho\Sistemas-Operacionais\BancodeDados\BancodeDados\bin\Debug\netcoreapp3.1\runtimes\unix\lib\netcoreapp3.0\System.Drawing.Common.dll
+C:\Users\henri\OneDrive\Área de Trabalho\Sistemas-Operacionais\BancodeDados\BancodeDados\bin\Debug\netcoreapp3.1\runtimes\win\lib\netcoreapp3.0\System.Drawing.Common.dll
+C:\Users\henri\OneDrive\Área de Trabalho\Sistemas-Operacionais\BancodeDados\BancodeDados\bin\Debug\netcoreapp3.1\runtimes\win\lib\netcoreapp3.0\System.Windows.Extensions.dll
+C:\Users\henri\OneDrive\Área de Trabalho\Sistemas-Operacionais\BancodeDados\BancodeDados\obj\Debug\netcoreapp3.1\SistemasOperacionais.csproj.CopyComplete
+C:\Users\henri\OneDrive\Área de Trabalho\Sistemas-Operacionais\BancodeDados\BancodeDados\obj\Debug\netcoreapp3.1\SistemasOperacionais.genruntimeconfig.cache

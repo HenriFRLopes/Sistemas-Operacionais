@@ -8,13 +8,19 @@ namespace Cliente
     public enum Acao { Search, Update, Insert, Remove };
     class Program
     {
-        const string pathFila = ".//Private$//BancoDeDadosFilaCliente";
-        const string bancoFila = ".//Private$//BancoDeDadosFila";
+        const string pathFila = ".\\Private$\\BancoDeDadosFilaCliente";
+        const string bancoFila = ".\\Private$\\BancoDeDadosFila";
 
         static void Main(string[] args)
         {
             Process processo = Process.GetCurrentProcess();
             string path = CreateQueue(processo.Id);
+
+            //Deletar a fila 
+            Console.CancelKeyPress += delegate (object sender, ConsoleCancelEventArgs e)
+            {
+                DeleteQueue(path);
+            };
 
             while (true)
             {
@@ -95,7 +101,7 @@ namespace Cliente
                 r.path = path;
 
                 MessageQueue messageQueue = new MessageQueue(bancoFila);
-                messageQueue.Formatter = new XmlMessageFormatter(new Type[] { typeof(string) });
+                messageQueue.Formatter = new XmlMessageFormatter(new Type[] { typeof(Requisicao) });
 
                 MessageQueue clienteFila = new MessageQueue(path);
                 clienteFila.Formatter = new XmlMessageFormatter(new Type[] { typeof(string) });

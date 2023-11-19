@@ -502,11 +502,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\henri\\OneDrive\\Área de Trabalho\\Sistemas-Operacionais\\Sistemas Operacionais\\SistemasOperacionais\\SistemasOperacionais\\SistemasOperacionais.csproj",
+      "projectUniqueName": "C:\\Users\\henri\\OneDrive\\Área de Trabalho\\Sistemas-Operacionais\\BancodeDados\\BancodeDados\\SistemasOperacionais.csproj",
       "projectName": "SistemasOperacionais",
-      "projectPath": "C:\\Users\\henri\\OneDrive\\Área de Trabalho\\Sistemas-Operacionais\\Sistemas Operacionais\\SistemasOperacionais\\SistemasOperacionais\\SistemasOperacionais.csproj",
+      "projectPath": "C:\\Users\\henri\\OneDrive\\Área de Trabalho\\Sistemas-Operacionais\\BancodeDados\\BancodeDados\\SistemasOperacionais.csproj",
       "packagesPath": "C:\\Users\\henri\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\henri\\OneDrive\\Área de Trabalho\\Sistemas-Operacionais\\Sistemas Operacionais\\SistemasOperacionais\\SistemasOperacionais\\obj\\",
+      "outputPath": "C:\\Users\\henri\\OneDrive\\Área de Trabalho\\Sistemas-Operacionais\\BancodeDados\\BancodeDados\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\henri\\AppData\\Roaming\\NuGet\\NuGet.Config",

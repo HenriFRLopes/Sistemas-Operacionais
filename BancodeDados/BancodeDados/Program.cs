@@ -13,8 +13,8 @@ namespace SistemasOperacionais
         const string temporaryFile = "Temporary_";
 
         //Variaveis da fila de processos
-        const string pathFila = ".//Private$//BancoDeDadosFila";
-        const string clienteFila = ".//Private$//BancoDeDadosFilaCliente";
+        const string pathFila = ".\\Private$\\BancoDeDadosFila";
+        const string clienteFila = ".\\Private$\\BancoDeDadosFilaCliente";
 
         static void Main(string[] args)
         {
@@ -29,10 +29,16 @@ namespace SistemasOperacionais
 
             CreateQueue();
 
-            MessageQueue mq = new MessageQueue(path);
-            mq.Formatter = new XmlMessageFormatter(new Type[] { typeof(string) });
+            MessageQueue mq = new MessageQueue(pathFila);
+            mq.Formatter = new XmlMessageFormatter(new Type[] { typeof(Requisicao) });
+            mq.Purge();
+            //Deletar a fila 
+            Console.CancelKeyPress += delegate (object sender, ConsoleCancelEventArgs e)
+            {
+                DeleteQueue();
+            };
 
-            while (true)
+                while (true)
             {
                 try
                 {
@@ -64,7 +70,7 @@ namespace SistemasOperacionais
 
         static void AcharAcao(string[] args, Controller c)
         {
-
+            // Argumentos do programa, para pegar a ação que o usuario quer utlizar
             string[] split = args[0].Split('=');
             if (split.Length < 2)
             {
@@ -211,28 +217,28 @@ namespace SistemasOperacionais
 
         public string Action(Requisicao r)
         {
-            switch (r.a)
+            switch (r.acao)
             {
                 default:
                     return "Invalid Comand";
 
-                case acao.Search:
+                case Acao.Search:
 
                     string found = Search(r.key);
                     if (found != null) return found;
                     else return "Key does not exist";
 
-                case acao.Insert:
+                case Acao.Insert:
 
                     if (Insert(r.key, r.value)) return r.value.ToString();
                     else return "Key is already inserted";
 
-                case acao.Update:
+                case Acao.Update:
 
                     if (Update(r.key, r.value)) return "Successfully Updated";
                     else return "Key does not exist";
 
-                case acao.Remove:
+                case Acao.Remove:
 
                     if (Remove(r.key)) return "Successfully removed";
 
@@ -264,6 +270,7 @@ namespace SistemasOperacionais
 
             if (file.EndOfStream)
             {
+                semaforo.Release();
                 return null;
             }
 
@@ -271,7 +278,7 @@ namespace SistemasOperacionais
 
             while (text != null)
             {
-                string[] splitData = text.Split(':');
+                string[] splitData = text.Split(',');
 
                 if (splitData[0] == key.ToString())
                 {
@@ -317,11 +324,11 @@ namespace SistemasOperacionais
             StreamWriter file = new StreamWriter(path, true);
 
             file.BaseStream.Seek(0, SeekOrigin.End);
-            file.WriteLine(key + ":" + value);
+            file.WriteLine(key + "," + value);
             file.Close();
 
             //Semaforo Up
-            semaforo.Close();
+            semaforo.Release();
 
             Console.WriteLine("Successful insertion");
 
@@ -337,6 +344,7 @@ namespace SistemasOperacionais
             //Semaforo Down
             semaforo.WaitOne();
 
+
             StreamWriter tempFile = new StreamWriter(path2, true);
             StreamReader file = new StreamReader(path, true);
 
@@ -351,11 +359,11 @@ namespace SistemasOperacionais
 
             while (text != null)
             {
-                string[] split = text.Split(':');
+                string[] split = text.Split(',');
 
                 if (!updated && split[0] == key.ToString())
                 {
-                    tempFile.WriteLine(key + ":" + value);
+                    tempFile.WriteLine(key + "," + value);
                     updated = true;
                 }
 
@@ -383,6 +391,7 @@ namespace SistemasOperacionais
 
             //Semaforo Up
             semaforo.Release();
+            
             return updated;
         }
 
@@ -411,7 +420,7 @@ namespace SistemasOperacionais
 
             while (text != null)
             {
-                string[] split = text.Split(':');
+                string[] split = text.Split(',');
 
                 if (split[0] == key.ToString()) removed = true;
 
@@ -427,13 +436,13 @@ namespace SistemasOperacionais
             {
                 //se encontrar o dado inserido substitui o arquivo pelo temporario, que não possui dados removidos
                 File.Delete(path);
-                File.Move(temporaryFile, path);
+                File.Move(path2, path);
             }
 
             else
             {
                 //se não emcontrar "key" do dado inserido, deleta o arquivo temporario
-                File.Delete(temporaryFile);
+                File.Delete(path2);
             }
 
             //Semaforo Up
