@@ -62,6 +62,7 @@ namespace Cliente
 
                 Requisicao r = null;
 
+                //Opções de comandos do usuario
                 switch (action)
                 {
                     default:
@@ -130,6 +131,7 @@ namespace Cliente
             }
         }
 
+        //Requisições de comando
         public static Requisicao Search(int key)
         {
             Requisicao r = new Requisicao();
