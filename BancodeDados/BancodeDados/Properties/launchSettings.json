@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "SistemasOperacionais": {
-      "commandName": "Project",
-      "commandLineArgs": "Insert=key:value"
-    }
-  }
-}
