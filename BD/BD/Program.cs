@@ -197,7 +197,7 @@ namespace BD
         }
 
     }
-    public class Controller
+    public class Controller: Comandos
     {
         string path;
         string temporaryFile;
@@ -215,38 +215,7 @@ namespace BD
             leitores = 0;
         }
 
-        public string Action(Requisicao r)
-        {
-            switch (r.acao)
-            {
-                default:
-                    return "Invalid Comand";
-
-                case Acao.Search:
-
-                    string found = Search(r.key);
-                    if (found != null) return found;
-                    else return "Key does not exist";
-
-                case Acao.Insert:
-
-                    if (Insert(r.key, r.value)) return r.value.ToString();
-                    else return "Key is already inserted";
-
-                case Acao.Update:
-
-                    if (Update(r.key, r.value)) return "Successfully Updated";
-                    else return "Key does not exist";
-
-                case Acao.Remove:
-
-                    if (Remove(r.key)) return "Successfully removed";
-
-                    else return "Key does not exist";
-            }
-        }
-
-        public string Search(int key)
+        public override string Search(int key)
         {
             string found = null;
             bool encontrado = false;
@@ -311,7 +280,7 @@ namespace BD
         }
 
         // Utiliza o StreamWriter para receber ou criar um arquivo novo, independente do caso, este metodo abre o arquivo, lê e insere as informãções (caso este dado não exista ainda) e fecha o arquivo
-        public bool Insert(int key, string value)
+        public override bool Insert(int key, string value)
         {
             if (Search(key) != null)
             {
@@ -336,7 +305,7 @@ namespace BD
         }
 
         //utiliza um arquivo temporario para armazenar as informações antigas do dado e substitui as informações que precisam ser atualizadas
-        public bool Update(int key, string value)
+        public override bool Update(int key, string value)
         {
             string path2 = temporaryFile + path;
             bool updated = false;
@@ -396,7 +365,7 @@ namespace BD
         }
 
         //utiliza um arquivo temporario que tem as informações antigas e compara o "key" do dado inserido com as informações do arquivo original para deletar
-        public bool Remove(int key)
+        public override bool Remove(int key)
         {
             if (!File.Exists(path)) return false;
 
@@ -451,6 +420,10 @@ namespace BD
             return removed;
         }
 
+        public override void Fechar()
+        {
+        }
+
     }
     public class Requisicao
     {
@@ -459,4 +432,45 @@ namespace BD
         public string path;
         public Acao acao;
     }
+
+    public abstract class Comandos
+    {
+        public string Action(Requisicao r)
+        {
+            switch (r.acao)
+            {
+                default:
+                    return "Invalid Comand";
+
+                case Acao.Search:
+
+                    string found = Search(r.key);
+                    if (found != null) return found;
+                    else return "Key does not exist";
+
+                case Acao.Insert:
+
+                    if (Insert(r.key, r.value)) return r.value.ToString();
+                    else return "Key is already inserted";
+
+                case Acao.Update:
+
+                    if (Update(r.key, r.value)) return "Successfully Updated";
+                    else return "Key does not exist";
+
+                case Acao.Remove:
+
+                    if (Remove(r.key)) return "Successfully removed";
+
+                    else return "Key does not exist";
+            }
+        }
+
+        public abstract string Search(int key);
+        public abstract bool Insert(int key, string value);
+        public abstract bool Update(int key, string value);
+        public abstract bool Remove(int key);
+        public abstract void Fechar();
+    }
+
 }
