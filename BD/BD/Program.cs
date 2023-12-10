@@ -2,6 +2,7 @@
 using System.IO;
 using System.Threading;
 using MSMQ.Messaging;
+using System.Collections.Generic;
 
 namespace BD
 {
@@ -430,6 +431,9 @@ namespace BD
         public string value;
         public string path;
         public Acao acao;
+        public bool bitR = false;
+        public bool bitM = false;
+        public bool recente = false;
     }
 
     public abstract class Comandos
