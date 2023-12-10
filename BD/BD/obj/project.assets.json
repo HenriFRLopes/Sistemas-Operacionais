@@ -497,19 +497,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Windows\\.nuget\\packages\\": {}
+    "C:\\Users\\henri\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\Users\\Windows\\Documents\\git kraken\\Sistemas-Operacionais\\BD\\BD\\BD.csproj",
+      "projectUniqueName": "C:\\Users\\henri\\OneDrive\\Área de Trabalho\\Sistemas-Operacionais\\BD\\BD\\BD.csproj",
       "projectName": "BD",
-      "projectPath": "D:\\Users\\Windows\\Documents\\git kraken\\Sistemas-Operacionais\\BD\\BD\\BD.csproj",
-      "packagesPath": "C:\\Users\\Windows\\.nuget\\packages\\",
-      "outputPath": "D:\\Users\\Windows\\Documents\\git kraken\\Sistemas-Operacionais\\BD\\BD\\obj\\",
+      "projectPath": "C:\\Users\\henri\\OneDrive\\Área de Trabalho\\Sistemas-Operacionais\\BD\\BD\\BD.csproj",
+      "packagesPath": "C:\\Users\\henri\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\henri\\OneDrive\\Área de Trabalho\\Sistemas-Operacionais\\BD\\BD\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\Windows\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\henri\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -521,6 +521,7 @@
       },
       "frameworks": {
         "netcoreapp3.1": {
+          "targetAlias": "netcoreapp3.1",
           "projectReferences": {}
         }
       },
@@ -532,6 +533,7 @@
     },
     "frameworks": {
       "netcoreapp3.1": {
+        "targetAlias": "netcoreapp3.1",
         "dependencies": {
           "MSMQ.Messaging": {
             "target": "Package",
@@ -553,7 +555,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.403\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.414\\RuntimeIdentifierGraph.json"
       }
     }
   }

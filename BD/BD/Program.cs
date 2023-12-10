@@ -426,6 +426,58 @@ namespace BD
 
     }
 
+    public class Requisicao
+    {
+        public int key;
+        public string value;
+        public string path;
+        public Acao acao;
+        public bool bitR = false;
+        public bool bitM = false;
+        public bool recente = false;
+    }
+
+    public abstract class Comandos
+    {
+        public string Action(Requisicao r)
+        {
+            switch (r.acao)
+            {
+                default:
+                    return "Invalid Comand";
+
+                case Acao.Search:
+
+                    string found = Search(r.key);
+                    if (found != null) return found;
+                    else return "Key does not exist";
+
+                case Acao.Insert:
+
+                    if (Insert(r.key, r.value)) return r.value.ToString();
+                    else return "Key is already inserted";
+
+                case Acao.Update:
+
+                    if (Update(r.key, r.value)) return "Successfully Updated";
+                    else return "Key does not exist";
+
+                case Acao.Remove:
+
+                    if (Remove(r.key)) return "Successfully removed";
+
+                    else return "Key does not exist";
+            }
+        }
+
+        public abstract string Search(int key);
+        public abstract bool Insert(int key, string value);
+        public abstract bool Update(int key, string value);
+        public abstract bool Remove(int key);
+        public abstract void Change();
+        public abstract void Close();
+    }
+
     public class CacheBanco : Comandos
     {
         public List<Requisicao> cache;
@@ -611,56 +663,8 @@ namespace BD
             bancoDados.Close();
         }
     }
-    public class Requisicao
-    {
-        public int key;
-        public string value;
-        public string path;
-        public Acao acao;
-        public bool bitR = false;
-        public bool bitM = false;
-        public bool recente = false;
-    }
 
-    public abstract class Comandos
-    {
-        public string Action(Requisicao r)
-        {
-            switch (r.acao)
-            {
-                default:
-                    return "Invalid Comand";
 
-                case Acao.Search:
 
-                    string found = Search(r.key);
-                    if (found != null) return found;
-                    else return "Key does not exist";
-
-                case Acao.Insert:
-
-                    if (Insert(r.key, r.value)) return r.value.ToString();
-                    else return "Key is already inserted";
-
-                case Acao.Update:
-
-                    if (Update(r.key, r.value)) return "Successfully Updated";
-                    else return "Key does not exist";
-
-                case Acao.Remove:
-
-                    if (Remove(r.key)) return "Successfully removed";
-
-                    else return "Key does not exist";
-            }
-        }
-
-        public abstract string Search(int key);
-        public abstract bool Insert(int key, string value);
-        public abstract bool Update(int key, string value);
-        public abstract bool Remove(int key);
-        public abstract void Change();
-        public abstract void Close();
-    }
 
 }
