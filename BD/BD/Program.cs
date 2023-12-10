@@ -420,9 +420,8 @@ namespace BD
             return removed;
         }
 
-        public override void Fechar()
-        {
-        }
+        public override void Change(){}
+        public override void Close(){}
 
     }
     public class Requisicao
@@ -470,7 +469,8 @@ namespace BD
         public abstract bool Insert(int key, string value);
         public abstract bool Update(int key, string value);
         public abstract bool Remove(int key);
-        public abstract void Fechar();
+        public abstract void Change();
+        public abstract void Close();
     }
 
 }
