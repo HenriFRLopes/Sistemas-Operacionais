@@ -425,6 +425,192 @@ namespace BD
         public override void Close(){}
 
     }
+
+    public class CacheBanco : Comandos
+    {
+        public List<Requisicao> cache;
+        public int size;
+
+        public Comandos bancoDados;
+
+        public CacheBanco(Comandos dataBank, int size)
+        {
+            this.bancoDados = dataBank;
+            this.size = size;
+            cache = new List<Requisicao>(size);
+        }
+
+        protected virtual void PrintCache()
+        {
+            Console.Write("[");
+            foreach (Requisicao requisicao in cache)
+            {
+                Console.Write(requisicao.key + " ");
+            }
+            Console.WriteLine("]");
+        }
+
+        Requisicao GetRequisicaoCache(int key)
+        {
+            foreach (Requisicao requisicao in cache)
+            {
+                if (requisicao.key == key)
+                {
+                    requisicao.bitR = true;
+                    return requisicao;
+                }
+            }
+
+            return null;
+        }
+
+        Requisicao GetRequisicaoDataBase(int key)
+        {
+            string value = bancoDados.Search(key);
+
+            if (value == null)
+            {
+                return null;
+            }
+
+            Requisicao requisicao = CreateRequisicao(key, value);
+            return requisicao;
+        }
+
+        protected Requisicao GetRequisicao(int key)
+        {
+            Requisicao requisicao = GetRequisicaoCache(key);
+            if (requisicao != null)
+            {
+                return requisicao;
+            }
+
+            requisicao = GetRequisicaoDataBase(key);
+            if (requisicao != null)
+            {
+                InsertInCache(requisicao);
+                return requisicao;
+            }
+
+            return null;
+        }
+
+        protected void ExecutarRequisicao(Requisicao requisicao)
+        {
+            if (requisicao.value == null) bancoDados.Remove(requisicao.key);
+            else if (requisicao.recente) bancoDados.Insert(requisicao.key, requisicao.value);
+            else if (requisicao.bitM) bancoDados.Update(requisicao.key, requisicao.value);
+        }
+
+        protected bool InsertInCache(Requisicao requisicao)
+        {
+            if (GetRequisicaoCache(requisicao.key) != null) return false;
+
+            if (cache.Count >= size)
+            {
+                SubstituirPagina(requisicao);
+            }
+            else cache.Add(requisicao);
+
+            return true;
+        }
+
+        // Algortimos de substituição de página
+        protected virtual void SubstituirPagina(Requisicao requisicao)
+        {
+            Requisicao exit = cache[0];
+            cache.RemoveAt(0);
+
+            ExecutarRequisicao(exit);
+
+            cache.Add(requisicao);
+        }
+
+        void RemoveFromCache(Requisicao requisicao)
+        {
+            cache.Remove(requisicao);
+        }
+
+        protected virtual Requisicao CreateRequisicao(int key, string value)
+        {
+            Requisicao requisicao = new Requisicao();
+            requisicao.key = key;
+            requisicao.value = value;
+            requisicao.bitR = true;
+            return requisicao;
+        }
+
+        public override string Search(int key)
+        {
+            Requisicao requisicao = GetRequisicao(key);
+            if (requisicao == null) return null;
+
+            return requisicao.value;
+        }
+
+        public override bool Insert(int key, string value)
+        {
+            Requisicao requisicao = GetRequisicao(key);
+
+            if (requisicao == null)
+            {
+                requisicao = CreateRequisicao(key, value);
+                requisicao.recente = true;
+                requisicao.bitM = true;
+                InsertInCache(requisicao);
+            }
+            else if (requisicao.value == null)
+            { // Marcado para deleção na cache
+                requisicao.value = value;
+                requisicao.bitM = true;
+            }
+            else return false;
+
+            return true;
+        }
+
+        public override bool Update(int key, string nvalue)
+        {
+            Requisicao requisicao = GetRequisicao(key);
+            if (requisicao == null || requisicao.value == null) return false;
+
+            requisicao.value = nvalue;
+            requisicao.bitM = true;
+
+            return true;
+        }
+
+        public override bool Remove(int key)
+        {
+            Requisicao requisicao = GetRequisicao(key);
+            if (requisicao == null) return false;
+            if (requisicao.recente)
+            {
+                RemoveFromCache(requisicao);
+                return true;
+            }
+
+            requisicao.value = null;
+            requisicao.bitM = true;
+
+            return true;
+        }
+
+        public override void Change()
+        {
+            bancoDados.Change();
+        }
+
+        public override void Close()
+        {
+            foreach (Requisicao requisicao in cache)
+            {
+                ExecutarRequisicao(requisicao);
+            }
+
+            bancoDados.Close();
+        }
+    }
     public class Requisicao
     {
         public int key;
