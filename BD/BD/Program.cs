@@ -664,7 +664,124 @@ namespace BD
         }
     }
 
+    public class LRU : CacheBanco
+    {
+        public LRU(Comandos bancoDados, int size) : base(bancoDados, size) { }
 
+        protected override void PrintCache()
+        {
+            Console.Write("[");
+            foreach (Requisicao requisicao in cache)
+            {
+                Console.Write("{" + requisicao.key + ",R:" + (requisicao.bitR ? '1' : '0') + ",M:" + (requisicao.bitM ? '1' : '0') + "} ");
+            }
+            Console.WriteLine("]");
+        }
+
+        protected override void SubstituirPagina(Requisicao requisicao)
+        {
+            int maxPriority = -1;
+            int index = -1;
+            Requisicao? candidate = null;
+
+            for (int i = 0; i < cache.Count; i++)
+            {
+                Requisicao rqs = cache[i];
+                int priority = (rqs.bitR ? 0 : 2) + (rqs.bitM ? 0 : 1);
+
+                if (priority > maxPriority)
+                {
+                    candidate = rqs;
+                    index = i;
+                    maxPriority = priority;
+                }
+            }
+
+            if (candidate == null) return;
+
+            cache.RemoveAt(index);
+            ExecutarRequisicao(candidate);
+            cache.Add(requisicao);
+        }
+
+        public override void Change()
+        {
+            foreach (Requisicao requisicao in cache)
+            {
+                requisicao.bitR = false;
+            }
+        }
+    }
+    public class AgingDaRequisicao : Requisicao
+    {
+        public int count = 0;
+    }
+
+    public class CacheDoAging : CacheBanco
+    {
+        public CacheDoAging(Comandos bancoDados, int size) : base(bancoDados, size)
+        {
+        }
+
+        protected override void PrintCache()
+        {
+            Console.Write("[");
+            foreach (AgingDaRequisicao requisicao in cache)
+            {
+                Console.Write("{" + requisicao.key + ",R:" + (requisicao.bitR ? '1' : '0') + ",Time:" + requisicao.count + "} ");
+            }
+            Console.WriteLine("]");
+        }
+
+        protected override Requisicao CreateRequisicao(int key, string value)
+        {
+            AgingDaRequisicao requisicao = new AgingDaRequisicao();
+            requisicao.key = key;
+            requisicao.value = value;
+            requisicao.bitR = true;
+            return requisicao;
+        }
+
+        protected override void SubstituirPagina(Requisicao requisicao)
+        {
+            AgingDaRequisicao? candidate = null;
+            int index = -1;
+            int minCount = int.MaxValue;
+
+            for (int i = 0; i < cache.Count; i++)
+            {
+                AgingDaRequisicao rqs = (AgingDaRequisicao)cache[i];
+
+                if (rqs.count < minCount)
+                {
+                    candidate = rqs;
+                    index = i;
+                    minCount = rqs.count;
+                }
+            }
+
+            if (candidate == null) return;
+
+            cache.RemoveAt(index);
+            ExecutarRequisicao(candidate);
+            cache.Add(requisicao);
+        }
+
+        public override void Change()
+        {
+            foreach (Requisicao requisicao in cache)
+            {
+                AgingDaRequisicao rqs = (AgingDaRequisicao)requisicao;
+                rqs.count /= 2;
+
+                if (rqs.bitR)
+                {
+                    rqs.count += 128;
+                    rqs.bitR = false;
+                }
+            }
+        }
+    }
 
 
 }
