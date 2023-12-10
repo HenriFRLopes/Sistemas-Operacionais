@@ -13,18 +13,22 @@ namespace BD
         const string path = "bancoDeDados.db";
         const string temporaryFile = "Temporary_";
 
+        const int updateTimer = 2000;
+
+        static bool ativo = true;
+
         //Variaveis da fila de processos
         const string pathFila = ".\\Private$\\BancoDeDadosFila";
         const string clienteFila = ".\\Private$\\BancoDeDadosFilaCliente";
 
         static void Main(string[] args)
         {
-            Controller controller = new Controller(path);
+            Comandos controller = new Controller(path);
 
             //pega as linhas de argumento do usuario
             if (args.Length > 0)
             {
-                AcharAcao(args, controller);
+                AcharAcao(args, ref controller);
                 return;
             }
 
@@ -36,10 +40,18 @@ namespace BD
             //Deletar a fila 
             Console.CancelKeyPress += delegate (object sender, ConsoleCancelEventArgs e)
             {
+                controller.Close();
                 DeleteQueue();
+                ativo = false;
             };
 
-            while (true)
+            if (controller is LRU || controller is CacheDoAging)
+            {
+                Thread thread = new Thread(() => ChangeCache(controller));
+                thread.Start();
+            }
+
+            while (ativo)
             {
                 try
                 {
@@ -56,9 +68,30 @@ namespace BD
                 }
             }
 
+            static void ChangeCache(Comandos controller)
+            {
+                while(ativo)
+                {
+                    Thread.Sleep(updateTimer);
+                    controller.Change();
+                }
+            }
+
         }
-        static void Resposta(Controller c, Requisicao r)
+        static void Resposta(Comandos c, Requisicao r)
         {
+            if(r.path == null)
+            {
+                return;
+            }
+
+            if (!MessageQueue.Exists(r.path))
+            {
+                return;
+            }
+
+
+
             //Processa a resposta
             string answer = c.Action(r);
 
@@ -69,14 +102,14 @@ namespace BD
             clienteFila.Close();
         }
 
-        static void AcharAcao(string[] args, Controller c)
+        static bool AcharAcao(string[] args, ref Comandos c)
         {
             // Argumentos do programa, para pegar a ação que o usuario quer utlizar
             string[] split = args[0].Split('=');
             if (split.Length < 2)
             {
                 Console.WriteLine("Invalid Input: Missing '='");
-                return;
+                return true;
 
             }
 
@@ -89,6 +122,7 @@ namespace BD
             if (keyAndValue[0] == "")
             {
                 Console.WriteLine("Invalid Input: Missing Key");
+                return true;
             }
 
             int key;
@@ -97,14 +131,14 @@ namespace BD
             if (!int.TryParse(keyAndValue[0], out key))
             {
                 Console.WriteLine("Invalid Input: Key must be an integer number");
-                return;
+                return true;
             }
 
             //Verifica se a cahve é um numero positivo
             if (key < 0)
             {
                 Console.WriteLine("Invalid Input: Key must be a positive number");
-                return;
+                return true;
             }
 
             Requisicao r = new Requisicao();
@@ -118,8 +152,14 @@ namespace BD
 
                 case "Search":
 
-                    if (keyAndValue.Length == 1) r.acao = Acao.Search;
-                    else return;
+                    if (keyAndValue.Length == 1)
+                    {
+                        r.acao = Acao.Search;
+                    }
+                    else
+                    {
+                        return true;
+                    }
                     break;
 
                 case "Insert":
@@ -127,7 +167,7 @@ namespace BD
                     if (keyAndValue.Length < 2)
                     {
                         Console.WriteLine("Invalid Input: Data value is Missing");
-                        return;
+                        return true;
                     }
                     else
                     {
@@ -141,7 +181,7 @@ namespace BD
                     if (keyAndValue.Length < 2)
                     {
                         Console.WriteLine("Invalid Input: Data value is Missing");
-                        return;
+                        return true;
                     }
                     else
                     {
@@ -160,9 +200,23 @@ namespace BD
                     else
                     {
                         Console.WriteLine("Invalid Input: More values than needed");
-                        return;
+                        return true;
                     }
                     break;
+                case "CacheSize":
+                    if (keyAndValue.Length >= 2)
+                    {
+                        Console.WriteLine("Invalid Input: Data value is Missing");
+                        return true;
+                    }
+                    Comandos banco = CacheBanco.GetCache(c, key, keyAndValue[1]);
+                    if (banco == null)
+                    {
+                        Console.WriteLine("invalid command: invalid cache values");
+                        return true;
+                    }
+                     c = banco;
+                    return false;
             }
 
             try
@@ -174,6 +228,7 @@ namespace BD
             {
                 Console.WriteLine("Inavlid Action: " + e.Message);
             }
+            return true;
         }
 
         static void CreateQueue()
@@ -485,11 +540,19 @@ namespace BD
 
         public Comandos bancoDados;
 
+        protected Semaphore semaforo;
+        protected Mutex mutex;
+        protected int readers;
+
         public CacheBanco(Comandos dataBank, int size)
         {
             this.bancoDados = dataBank;
             this.size = size;
             cache = new List<Requisicao>(size);
+
+            semaforo = new Semaphore(1, 1);
+            mutex = new Mutex();
+            readers = 0;
         }
 
         protected virtual void PrintCache()
@@ -524,20 +587,25 @@ namespace BD
             {
                 return null;
             }
-
             Requisicao requisicao = CreateRequisicao(key, value);
             return requisicao;
         }
 
         protected Requisicao GetRequisicao(int key)
         {
+            DownReaders();
+
             Requisicao requisicao = GetRequisicaoCache(key);
+
+            UpReaders();
+
             if (requisicao != null)
             {
                 return requisicao;
             }
 
             requisicao = GetRequisicaoDataBase(key);
+
             if (requisicao != null)
             {
                 InsertInCache(requisicao);
@@ -556,26 +624,35 @@ namespace BD
 
         protected bool InsertInCache(Requisicao requisicao)
         {
-            if (GetRequisicaoCache(requisicao.key) != null) return false;
 
             if (cache.Count >= size)
             {
                 SubstituirPagina(requisicao);
             }
-            else cache.Add(requisicao);
+            else
+            {
+                semaforo.WaitOne();
+                cache.Add(requisicao);
+                semaforo.Release();
+            }
 
             return true;
         }
 
-        // Algortimos de substituição de página
+        protected virtual Requisicao SubstituirRequisicao()
+        {
+            return cache[0];
+        }
         protected virtual void SubstituirPagina(Requisicao requisicao)
         {
+            semaforo.WaitOne();
             Requisicao exit = cache[0];
-            cache.RemoveAt(0);
-
-            ExecutarRequisicao(exit);
-
+            cache.Remove(exit);
             cache.Add(requisicao);
+            semaforo.Release();
+
+            Thread thread = new Thread(() => ExecutarRequisicao(exit));
+            thread.Start();
         }
 
         void RemoveFromCache(Requisicao requisicao)
@@ -596,6 +673,9 @@ namespace BD
         {
             Requisicao requisicao = GetRequisicao(key);
             if (requisicao == null) return null;
+            semaforo.WaitOne();
+            requisicao.bitR = true;
+            semaforo.Release();
 
             return requisicao.value;
         }
@@ -612,9 +692,12 @@ namespace BD
                 InsertInCache(requisicao);
             }
             else if (requisicao.value == null)
-            { // Marcado para deleção na cache
+            {
+                semaforo.WaitOne();
                 requisicao.value = value;
                 requisicao.bitM = true;
+                requisicao.bitR = true;
+                semaforo.Release();
             }
             else return false;
 
@@ -626,8 +709,12 @@ namespace BD
             Requisicao requisicao = GetRequisicao(key);
             if (requisicao == null || requisicao.value == null) return false;
 
+            semaforo.WaitOne();
             requisicao.value = nvalue;
             requisicao.bitM = true;
+            requisicao.bitR = true;
+            semaforo.Release();
+
 
             return true;
         }
@@ -636,15 +723,18 @@ namespace BD
         {
             Requisicao requisicao = GetRequisicao(key);
             if (requisicao == null) return false;
+            semaforo.WaitOne();
             if (requisicao.recente)
             {
-                RemoveFromCache(requisicao);
+                cache.Remove(requisicao);
+                semaforo.Release();
                 return true;
             }
 
             requisicao.value = null;
             requisicao.bitM = true;
-
+            requisicao.bitR = true;
+            semaforo.Release();
             return true;
         }
 
@@ -662,6 +752,47 @@ namespace BD
 
             bancoDados.Close();
         }
+
+        protected void UpReaders()
+        {
+            mutex.WaitOne();
+            readers--;
+            if (readers == 0)
+            {
+                semaforo.Release();
+            }
+            mutex.ReleaseMutex();
+        }
+
+        protected void DownReaders()
+        {
+            mutex.WaitOne();
+            readers++;
+            if(readers == 1)
+            {
+                semaforo.WaitOne();
+            }
+            mutex.ReleaseMutex();
+        }
+        public static CacheBanco GetCache(Comandos bancoDados, int size, string opcao)
+        {
+            if (size <= 0)
+            {
+                return null;
+            }
+
+            switch (opcao)
+            {
+                case "FIFO":
+                    return new CacheBanco(bancoDados, size);
+                case "LRU":
+                    return new LRU(bancoDados, size);
+                case "Aging":
+                    return new CacheDoAging(bancoDados, size);
+                default:
+                    return null;
+            }
+        }
     }
 
     public class LRU : CacheBanco
@@ -678,11 +809,10 @@ namespace BD
             Console.WriteLine("]");
         }
 
-        protected override void SubstituirPagina(Requisicao requisicao)
+        protected override Requisicao SubstituirRequisicao()
         {
-            int maxPriority = -1;
-            int index = -1;
-            Requisicao? candidate = null;
+            Requisicao? candidate = cache[0];
+            int maxPriority = (candidate.bitR ? 0: 2) + (candidate.bitM ? 0: 1);
 
             for (int i = 0; i < cache.Count; i++)
             {
@@ -692,16 +822,10 @@ namespace BD
                 if (priority > maxPriority)
                 {
                     candidate = rqs;
-                    index = i;
                     maxPriority = priority;
                 }
             }
-
-            if (candidate == null) return;
-
-            cache.RemoveAt(index);
-            ExecutarRequisicao(candidate);
-            cache.Add(requisicao);
+            return candidate;
         }
 
         public override void Change()
@@ -712,9 +836,9 @@ namespace BD
             }
         }
     }
-    public class AgingDaRequisicao : Requisicao
+    public class AgingDaRequisicao: Requisicao
     {
-        public int count = 0;
+        public int count = 128; 
     }
 
     public class CacheDoAging : CacheBanco
@@ -742,29 +866,22 @@ namespace BD
             return requisicao;
         }
 
-        protected override void SubstituirPagina(Requisicao requisicao)
+        protected override Requisicao SubstituirRequisicao()
         {
-            AgingDaRequisicao? candidate = null;
-            int index = -1;
-            int minCount = int.MaxValue;
+            AgingDaRequisicao? candidate = (AgingDaRequisicao) cache[0];
+            int minCount = candidate.count;
 
             for (int i = 0; i < cache.Count; i++)
             {
                 AgingDaRequisicao rqs = (AgingDaRequisicao)cache[i];
 
-                if (rqs.count < minCount)
+                if (rqs.count < minCount || candidate == null)
                 {
                     candidate = rqs;
-                    index = i;
                     minCount = rqs.count;
                 }
             }
-
-            if (candidate == null) return;
-
-            cache.RemoveAt(index);
-            ExecutarRequisicao(candidate);
-            cache.Add(requisicao);
+            return candidate;
         }
 
         public override void Change()
