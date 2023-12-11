@@ -10,7 +10,7 @@ namespace BD
     class Program
     {
         //variaveis do arquivo de banco de dados
-        const string path = "bancoDeDados.db";
+        const string path = "BD.db";
         const string temporaryFile = "Temporary_";
 
         const int updateTimer = 2000;
@@ -28,8 +28,10 @@ namespace BD
             //pega as linhas de argumento do usuario
             if (args.Length > 0)
             {
-                AcharAcao(args, ref controller);
-                return;
+                if(AcharAcao(args, ref controller))
+                {
+                    return;
+                }
             }
 
             CreateQueue();
@@ -108,16 +110,15 @@ namespace BD
             string[] split = args[0].Split('=');
             if (split.Length < 2)
             {
-                Console.WriteLine("Invalid Input: Missing '='");
+                Console.WriteLine("Invalid Input: Missing '-'");
                 return true;
-
             }
 
             //O usuario pode usar os comandos: Search, Insert, Update e Remove
             string action = split[0];
 
             //Separa o argumento na variavel keyAndValue
-            string[] keyAndValue = split[1].Split(':', 2); // [0] = Chave do Dado (sempre uma int) [1] = Valor do Dado
+            string[] keyAndValue = split[1].Split('-', 2); // [0] = Chave do Dado (sempre uma int) [1] = Valor do Dado
 
             if (keyAndValue[0] == "")
             {
@@ -204,7 +205,7 @@ namespace BD
                     }
                     break;
                 case "CacheSize":
-                    if (keyAndValue.Length >= 2)
+                    if (keyAndValue.Length < 2)
                     {
                         Console.WriteLine("Invalid Input: Data value is Missing");
                         return true;
